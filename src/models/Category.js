@@ -13,20 +13,21 @@ const categorySchema = new mongoose.Schema(
     slug: {
       type: String,
       required: [true, "Category slug is required"],
-      unique: true,
-      lowercase: true,
       trim: true,
-      maxlength: [120, "Category slug cannot exceed 120 characters"],
+      lowercase: true,
+      unique: true,
+      minlength: [2, "Category slug must be at least 2 characters"],
+      maxlength: [100, "Category slug cannot exceed 100 characters"],
       match: [
         /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-        "Slug must contain only lowercase letters, numbers, and hyphens"
+        "Category slug must contain only lowercase letters, numbers, and hyphens"
       ]
     },
 
     description: {
       type: String,
       trim: true,
-      maxlength: [500, "Description cannot exceed 500 characters"]
+      maxlength: [500, "Category description cannot exceed 500 characters"]
     },
 
     isActive: {
@@ -39,6 +40,8 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-categorySchema.index({ slug: 1 }, { unique: true });
+categorySchema.index({ isActive: 1 });
 
-module.exports = mongoose.model("Category", categorySchema);
+const Category = mongoose.model("Category", categorySchema);
+
+module.exports = Category;
