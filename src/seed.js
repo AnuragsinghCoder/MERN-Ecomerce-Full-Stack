@@ -1,3 +1,7 @@
+const dns = require("dns");
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
 const connectDB = require("./config/db.js");
 const User = require("./models/User");
 const Product = require("./models/Product");
@@ -66,89 +70,113 @@ const seed = async () => {
 
     const categories = [
       {
-        name: "Electronics"
+        name: "Electronics",
+        slug: "electronics"
       },
       {
-        name: "Clothing"
+        name: "Clothing",
+        slug: "clothing"    
       },
       {
-        name: "Home"
+        name: "Home",
+        slug: "home"
       },
       {
-        name: "Toys"
+        name: "Toys",
+        slug: "toys"
       }
     ];
 
     const products = [
       {
         name: "Product 1",
+        slug: "product-1",
         description: "This is a product description",
-        price: 9.99,
+        price: 9,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 2",
+        slug: "product-2",
         description: "This is a product description",
-        price: 19.99,
+        price: 19,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 3",
+        slug: "product-3",
         description: "This is a product description",
-        price: 29.99,
+        price: 29,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 4",
+        slug: "product-4",
         description: "This is a product description",
-        price: 39.99,
+        price: 39,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 5",
+        slug: "product-5",
         description: "This is a product description",
-        price: 49.99,
+        price: 49,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 6",
+        slug: "product-6",
         description: "This is a product description",
-        price: 59.99,
+        price: 59,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 7",
+        slug: "product-7",
         description: "This is a product description",
-        price: 69.99,
+        price: 69,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 8",
+        slug: "product-8",
         description: "This is a product description",
-        price: 79.99,
+        price: 79,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 9",
+        slug: "product-9",
         description: "This is a product description",
-        price: 89.99,
+        price: 89,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       },
       {
         name: "Product 10",
+        slug: "product-10",
         description: "This is a product description",
-        price: 99.99,
+        price: 99,
         imageUrl: "https://via.placeholder.com/150",
-        category: "electronics"
+        category: "6ab99988186df518b7aba853",
+        stock: 10
       }
     ];
     
@@ -190,9 +218,9 @@ const seed = async () => {
         console.error("Failed to seed products:", error.message);
       }
     };
-    seedUsers(users);
-    seedCategories(categories);
-    seedProducts(products);
+    await seedUsers(users);
+    await seedCategories(categories);
+    await seedProducts(products);
 
     console.log("Database seeded successfully");
     process.exit(0);
