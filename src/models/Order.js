@@ -1,54 +1,33 @@
 const mongoose = require("mongoose");
 
-const orderAddressSchema = new mongoose.Schema(
+const orderItemSchema = new mongoose.Schema(
   {
-    fullName: {
-      type: String,
-      required: [true, "Shipping full name is required"],
-      trim: true,
-      maxlength: [100, "Shipping full name cannot exceed 100 characters"]
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: [true, "Product is required"]
     },
 
-    phone: {
+    name: {
       type: String,
-      required: [true, "Shipping phone number is required"],
-      trim: true,
-      maxlength: [20, "Shipping phone number cannot exceed 20 characters"]
+      required: [true, "Product name is required"],
+      trim: true
     },
 
-    addressLine: {
-      type: String,
-      required: [true, "Shipping address is required"],
-      trim: true,
-      maxlength: [200, "Shipping address cannot exceed 200 characters"]
+    price: {
+      type: Number,
+      required: [true, "Product price is required"],
+      min: [0, "Product price cannot be negative"]
     },
 
-    city: {
-      type: String,
-      required: [true, "Shipping city is required"],
-      trim: true,
-      maxlength: [100, "Shipping city cannot exceed 100 characters"]
-    },
-
-    state: {
-      type: String,
-      required: [true, "Shipping state is required"],
-      trim: true,
-      maxlength: [100, "Shipping state cannot exceed 100 characters"]
-    },
-
-    postalCode: {
-      type: String,
-      required: [true, "Shipping postal code is required"],
-      trim: true,
-      maxlength: [20, "Shipping postal code cannot exceed 20 characters"]
-    },
-
-    country: {
-      type: String,
-      required: [true, "Shipping country is required"],
-      trim: true,
-      maxlength: [100, "Shipping country cannot exceed 100 characters"]
+    quantity: {
+      type: Number,
+      required: [true, "Quantity is required"],
+      min: [1, "Quantity must be at least 1"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Quantity must be an integer"
+      }
     }
   },
   {
@@ -56,44 +35,52 @@ const orderAddressSchema = new mongoose.Schema(
   }
 );
 
-const orderItemSchema = new mongoose.Schema(
+const shippingAddressSchema = new mongoose.Schema(
   {
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: [true, "Order item product is required"]
-    },
-
-    name: {
+    fullName: {
       type: String,
-      required: [true, "Order item name is required"],
-      trim: true,
-      maxlength: [200, "Order item name cannot exceed 200 characters"]
+      required: [true, "Full name is required"],
+      trim: true
     },
 
-    price: {
-      type: Number,
-      required: [true, "Order item price is required"],
-      min: [0, "Order item price cannot be negative"],
-      validate: {
-        validator: Number.isInteger,
-        message:
-          "Order item price must be an integer in the smallest currency unit"
-      }
+    phone: {
+      type: String,
+      required: [true, "Phone number is required"],
+      trim: true
     },
 
-    quantity: {
-      type: Number,
-      required: [true, "Order item quantity is required"],
-      min: [1, "Order item quantity must be at least 1"],
-      validate: {
-        validator: Number.isInteger,
-        message: "Order item quantity must be an integer"
-      }
+    addressLine: {
+      type: String,
+      required: [true, "Address is required"],
+      trim: true
+    },
+
+    city: {
+      type: String,
+      required: [true, "City is required"],
+      trim: true
+    },
+
+    state: {
+      type: String,
+      required: [true, "State is required"],
+      trim: true
+    },
+
+    postalCode: {
+      type: String,
+      required: [true, "Postal code is required"],
+      trim: true
+    },
+
+    country: {
+      type: String,
+      required: [true, "Country is required"],
+      trim: true
     }
   },
   {
-    _id: true
+    _id: false
   }
 );
 
@@ -102,13 +89,13 @@ const orderSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Order user is required"],
+      required: [true, "User is required"],
       index: true
     },
 
     items: {
       type: [orderItemSchema],
-      required: [true, "Order must contain at least one item"],
+      required: true,
       validate: {
         validator: (items) => items.length > 0,
         message: "Order must contain at least one item"
@@ -116,66 +103,45 @@ const orderSchema = new mongoose.Schema(
     },
 
     shippingAddress: {
-      type: orderAddressSchema,
-      required: [true, "Shipping address is required"]
+      type: shippingAddressSchema,
+      required: true
     },
 
     subtotal: {
       type: Number,
-      required: [true, "Order subtotal is required"],
-      min: [0, "Order subtotal cannot be negative"],
-      validate: {
-        validator: Number.isInteger,
-        message:
-          "Order subtotal must be an integer in the smallest currency unit"
-      }
+      required: true,
+      min: 0
     },
 
     shippingCost: {
       type: Number,
-      required: [true, "Shipping cost is required"],
-      min: [0, "Shipping cost cannot be negative"],
-      default: 0,
-      validate: {
-        validator: Number.isInteger,
-        message:
-          "Shipping cost must be an integer in the smallest currency unit"
-      }
+      required: true,
+      min: 0,
+      default: 0
     },
 
     total: {
       type: Number,
-      required: [true, "Order total is required"],
-      min: [0, "Order total cannot be negative"],
-      validate: {
-        validator: Number.isInteger,
-        message:
-          "Order total must be an integer in the smallest currency unit"
-      }
+      required: true,
+      min: 0
     },
 
     paymentStatus: {
       type: String,
-      enum: {
-        values: ["pending", "paid", "failed"],
-        message: "Invalid payment status"
-      },
+      enum: ["pending", "paid", "failed"],
       default: "pending"
     },
 
     orderStatus: {
       type: String,
-      enum: {
-        values: [
-          "pending",
-          "confirmed",
-          "processing",
-          "shipped",
-          "delivered",
-          "cancelled"
-        ],
-        message: "Invalid order status"
-      },
+      enum: [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled"
+      ],
       default: "pending"
     }
   },
@@ -187,4 +153,6 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ orderStatus: 1, createdAt: -1 });
 
-module.exports = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("Order", orderSchema);
+
+module.exports = Order;
