@@ -1,17 +1,29 @@
+
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-
-
-
-dotenv.config();
+require("dotenv").config();
 
 const connectDB = async () => {
   try {
-    const connection = await mongoose.connect(process.env.MONGO_URI_2);
+    if (mongoose.connection.readyState === 1) {
+      return mongoose.connection;
+    }
 
-    console.log(`MongoDB connected: ${connection.connection.host}`);
+    if (mongoose.connection.readyState === 2) {
+      await mongoose.connection.asPromise();
+      return mongoose.connection;
+    }
+
+    const connection = await mongoose.connect(
+      process.env.MONGO_URI_2
+    );
+
+    console.log(
+      `MongoDB connected: ${connection.connection.host}`
+    );
+
+    return connection.connection;
   } catch (error) {
-    console.error("MongoDB connection error:", error.message, process.env.MONGO_URI_2);
+    console.error("MongoDB connection error:", error.message);
     throw error;
   }
 };
