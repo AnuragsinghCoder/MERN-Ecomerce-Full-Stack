@@ -149,21 +149,21 @@ exports.updateCategory = async (req, res, next) => {
     }
 
     if (updates.images !== undefined) {
-        if (req.body.images !== undefined) {
-            if (
-                    !Array.isArray(req.body.images) ||
-                    req.body.images.some(
-                    (image) =>
-                        typeof image !== "string" ||
-                        image.trim().length === 0 ||
-                        image.trim().length > 500
-                )
-            ) {
-                return sendError(res, 400, "Invalid category images.");
-            }
-
-            updates.images = req.body.images.map((image) => image.trim());
+      if (req.body.images !== undefined) {
+        if (
+          !Array.isArray(req.body.images) ||
+          req.body.images.some(
+            (image) =>
+              typeof image !== "string" ||
+              image.trim().length === 0 ||
+              image.trim().length > 500
+          )
+        ) {
+          return sendError(res, 400, "Invalid category images.");
         }
+
+        updates.images = req.body.images.map((image) => image.trim());
+      }
     }
 
     if (Object.keys(updates).length === 0) {
