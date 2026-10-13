@@ -21,7 +21,7 @@ function sendError(res, status, message) {
 exports.getCategories = async (req, res, next) => {
   try {
     const categories = await Category.find({ isActive: true })
-      .select("name slug description")
+      .select("name slug description images")
       .sort({ name: 1 })
       .lean();
 
@@ -54,10 +54,14 @@ exports.createCategory = async (req, res, next) => {
         : "";
 
     const images =
-      typeof req.body.images === "string"
-        ? req.body.images.trim()
-        : "";
-
+        typeof req.body.images === "string"
+            ? [req.body.images.trim()].filter(Boolean)
+            : Array.isArray(req.body.images)
+            ? req.body.images
+                .filter((image) => typeof image === "string")
+                .map((image) => image.trim())
+                .filter(Boolean)
+        : [];
     if (name.length < 2 || name.length > 80) {
       return sendError(
         res,
@@ -145,18 +149,25 @@ exports.updateCategory = async (req, res, next) => {
     }
 
     if (updates.images !== undefined) {
-      if (
-        typeof req.body.images !== "string" ||
-        req.body.images.trim().length > 500
-      ) {
-        return sendError(res, 400, "Invalid category images.");
-      }
+        if (req.body.images !== undefined) {
+            if (
+                    !Array.isArray(req.body.images) ||
+                    req.body.images.some(
+                    (image) =>
+                        typeof image !== "string" ||
+                        image.trim().length === 0 ||
+                        image.trim().length > 500
+                )
+            ) {
+                return sendError(res, 400, "Invalid category images.");
+            }
 
-      updates.images = req.body.images.trim();
+            updates.images = req.body.images.map((image) => image.trim());
+        }
     }
 
     if (Object.keys(updates).length === 0) {
-      return sendError(res, 400, "Provide a category name or description.");
+      return sendError(res, 400, "Provide a category name or description or images.");
     }
 
     const category = await Category.findByIdAndUpdate(id, updates, {
