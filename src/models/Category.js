@@ -27,7 +27,8 @@ const categorySchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
-      maxlength: [500, "Category description cannot exceed 500 characters"]
+      maxlength: [500, "Category description cannot exceed 500 characters"],
+      default: ""
     },
 
     isActive: {
@@ -40,7 +41,7 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-categorySchema.index({ isActive: 1 });
+categorySchema.index({ isActive: 1, name: 1 });
 
 const Category = mongoose.model("Category", categorySchema);
 
