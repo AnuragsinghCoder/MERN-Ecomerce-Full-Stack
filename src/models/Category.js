@@ -31,6 +31,16 @@ const categorySchema = new mongoose.Schema(
       default: ""
     },
 
+    images: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: (images) =>
+          images.every((image) => typeof image === "string" && image.trim()),
+        message: "Each product image must be a valid non-empty string"
+      }
+    },
+
     isActive: {
       type: Boolean,
       default: true

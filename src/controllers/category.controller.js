@@ -53,6 +53,11 @@ exports.createCategory = async (req, res, next) => {
         ? req.body.description.trim()
         : "";
 
+    const images =
+      typeof req.body.images === "string"
+        ? req.body.images.trim()
+        : "";
+
     if (name.length < 2 || name.length > 80) {
       return sendError(
         res,
@@ -75,6 +80,7 @@ exports.createCategory = async (req, res, next) => {
       name,
       slug,
       description,
+      images,
     });
 
     return res.status(201).json({
@@ -136,6 +142,17 @@ exports.updateCategory = async (req, res, next) => {
       }
 
       updates.description = req.body.description.trim();
+    }
+
+    if (updates.images !== undefined) {
+      if (
+        typeof req.body.images !== "string" ||
+        req.body.images.trim().length > 500
+      ) {
+        return sendError(res, 400, "Invalid category images.");
+      }
+
+      updates.images = req.body.images.trim();
     }
 
     if (Object.keys(updates).length === 0) {
